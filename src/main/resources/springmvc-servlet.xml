@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
+    <!--扫描包-->
+    <context:component-scan base-package="cn.qzt.controller"/>
+
+    <!--注解驱动-->
+    <mvc:annotation-driven validator="validator"/>
+
+    <!--定义验证类-->
+    <bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean">
+    <property name="providerClass" value="org.hibernate.validator.HibernateValidator">
+    </property>
+    </bean>
+
+    <!--指定配置文件位置　编码格式　缓存等-->
+    <bean id="validationMessageSource"
+          class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+        <property name="basename" value="validatormessages"/> <!-- 资源路径 -->
+        <property name="fileEncodings" value="utf-8" />
+        <property name="cacheSeconds" value="1200" /> <!-- 缓存时间 -->
+    </bean>
+
+    <!--加载静态资源-->
+    <mvc:resources mapping="/statics/**" location="/statics/"/>
+
+    <!--配置多视图解析器-->
+    <bean class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
+        <property name="favorParameter" value="true"/>
+        <property name="defaultContentType" value="text/html" />
+        <property name="mediaTypes">
+            <map>
+                <entry key="html" value="text/html; charset=UTF-8"/>
+                <entry key="json" value="application/json; charset=UTF-8"/>
+                <entry key="xml" value="application/xml; charset=UTF-8"/>
+            </map>
+        </property>
+        <property name="viewResolvers">
+            <list>
+                <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+                    <property name="prefix" value="/WEB-INF/jsp/"/>
+                    <property name="suffix" value=".jsp"/>
+                </bean>
+            </list>
+        </property>
+    </bean>
+
+    <!--配置文件上传-->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="maxUploadSize" value="500000000"/>
+        <property name="defaultEncoding" value="UTF-8"/>
+    </bean>
+
+
+</beans>
